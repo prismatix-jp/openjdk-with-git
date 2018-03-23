@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: buildpack-deps:stretch-scm
+    working_directory: ~/app
+    steps:
+      - checkout
+      - run:
+          command: | 
+            OUTPUT=$(curl -H "Content-Type: application/json" --data '{"build": true}' -XPOST https://registry.hub.docker.com/u/classmethod/openjdk-with-git/trigger/$TOKEN/)
+            if [ $OUTPUT != "OK" ]; then
+              echo build queuing is failed.
+              exit 1
+            fi
+workflows:
+  version: 2
+  all:
+    jobs:
+      - build 
+  scheduled:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: master
+
+    jobs:
+      - build
