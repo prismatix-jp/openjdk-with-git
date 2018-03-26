@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build-scheduled:
     docker:
       - image: buildpack-deps:stretch-scm
     working_directory: ~/app
@@ -13,6 +13,24 @@ jobs:
               echo build queuing is failed.
               exit 1
             fi
+  build:
+    docker:
+      - image: buildpack-deps:stretch-scm
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -s -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      - run: cd java8 && docker build .
+      - run: cd java9 && docker build .
+      - run: cd java10 && docker build .
 workflows:
   version: 2
   all:
@@ -27,4 +45,4 @@ workflows:
               only: master
 
     jobs:
-      - build
+      - build-scheduled
