@@ -1,6 +1,7 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8-jdk-slim
 
-RUN apk add --update --no-cache \
-      openssh-client \
-      git \
-      procps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    openssh-client \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
