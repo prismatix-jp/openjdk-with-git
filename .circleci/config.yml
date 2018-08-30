@@ -31,6 +31,7 @@ jobs:
       - run: cd java8 && docker build .
       - run: cd java9 && docker build .
       - run: cd java10 && docker build .
+      - run: cd java11 && docker build .
 workflows:
   version: 2
   all:
