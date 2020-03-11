@@ -7,12 +7,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Trigger Docker hub build
           command: | 
-            OUTPUT=$(curl -H "Content-Type: application/json" --data '{"build": true}' -XPOST https://registry.hub.docker.com/u/classmethod/openjdk-with-git/trigger/$TOKEN/)
-            if [ $OUTPUT != "OK" ]; then
-              echo build queuing is failed.
-              exit 1
-            fi
+            curl -H "Content-Type: application/json" --data '{"build": true}' -XPOST https://hub.docker.com/api/build/v1/source/${DOCKER_HUB_PROJECT_ID}/trigger/${TOKEN}/call/
   build:
     docker:
       - image: buildpack-deps:stretch-scm
@@ -24,9 +21,8 @@ jobs:
           name: Install Docker client
           command: |
             set -x
-            VER="17.03.0-ce"
-            curl -s -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            curl -s -L -o /tmp/docker-latest.tgz https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz
+            tar -xz -C /tmp -f /tmp/docker-latest.tgz
             mv /tmp/docker/* /usr/bin
       - run: cd java8 && docker build .
       - run: cd java9 && docker build .
@@ -45,6 +41,5 @@ workflows:
           filters:
             branches:
               only: master
-
     jobs:
       - build-scheduled
