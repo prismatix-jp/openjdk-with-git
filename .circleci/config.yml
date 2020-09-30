@@ -29,6 +29,7 @@ jobs:
       - run: cd java10 && docker build .
       - run: cd java11 && docker build .
       - run: cd java8-browser-library && docker build .
+      - run: cd java8-browser-awscli-library && docker build .
 workflows:
   version: 2
   all:
