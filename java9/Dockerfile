@@ -1,9 +1,11 @@
 FROM openjdk:9-jdk-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo "deb http://ftp.us.debian.org/debian testing main" >> /etc/apt/sources.list \
+    && apt-get clean && apt-get update && apt-get install -y --no-install-recommends \
     git \
     openssh-client \
     procps \
     ca-certificates \
+    -o APT::Immediate-Configure=0 \
     && rm -rf /var/lib/apt/lists/*
-    
+# https://github.com/docker/for-linux/issues/1131#issuecomment-713029736
