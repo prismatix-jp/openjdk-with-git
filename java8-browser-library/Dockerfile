@@ -11,7 +11,10 @@ RUN apt-get update \
       gnupg
 
 # chrome driver のインストール
-RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_89) \
+RUN CHROME_LATEST_VERSION=$(curl -sS omahaproxy.appspot.com/linux?channel=stable) \
+ && echo "CHROME_LATEST_VERSION: ${CHROME_LATEST_VERSION}" \
+ && CHROME_LATEST_MAJOR_VERSION=$(echo $CHROME_LATEST_VERSION | cut -d . -f 1) \
+ && CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_LATEST_MAJOR_VERSION) \
  && echo "CHROME_DRIVER_VERSION: ${CHROME_DRIVER_VERSION}" \
  && curl -sS http://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip -o chromedriver_linux64.zip \
  && unzip chromedriver_linux64.zip \
